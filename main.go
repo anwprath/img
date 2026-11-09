@@ -17,6 +17,9 @@ type Numeric interface {
 }
 
 func abs[T Numeric](x T) T {
+	if x == 0 {
+		return 1
+	}
 	if x > 0 {
 		return x
 	}
@@ -55,7 +58,7 @@ func line(img *image.RGBA, a, b int32, c, d int32, col color.Color) {
 
 func circle(img *image.RGBA, cx, cy, radius int, col color.Color) {
 	x, y := radius, 0
-	// err := 1 - radius
+	err := 1 - radius
 
 	for x >= y {
 		octants := [][2]int{
@@ -66,8 +69,12 @@ func circle(img *image.RGBA, cx, cy, radius int, col color.Color) {
 			img.Set(cx+point[0], cy+point[1], col)
 		}
 		y++
-		if y%2 == 0 {
+
+		if err < 0 {
+			err += 2*y + 1
+		} else {
 			x--
+			err += 2*(y-x) + 1
 		}
 
 	}
@@ -79,7 +86,13 @@ func main() {
 		img.Pix[i] = 255 // white
 	}
 	line(img, 0, 0, 100, 100, RED)
+	line(img, 0, 200, 100, 100, RED)
+	line(img, 200, 0, 100, 100, RED)
+	line(img, 200, 200, 100, 100, RED)
 	circle(img, 100, 100, 10, RED)
+	circle(img, 100, 100, 20, RED)
+	circle(img, 100, 100, 30, RED)
+	circle(img, 100, 100, 40, RED)
 	f, _ := os.Create("out.png")
 	defer f.Close()
 	png.Encode(f, img)
