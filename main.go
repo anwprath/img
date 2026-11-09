@@ -66,7 +66,10 @@ func circle(img *image.RGBA, cx, cy, radius int, col color.Color) {
 			img.Set(cx+point[0], cy+point[1], col)
 		}
 		y++
-		x--
+		if y%2 == 0 {
+			x--
+		}
+
 	}
 }
 
