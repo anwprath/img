@@ -53,23 +53,30 @@ func line(img *image.RGBA, a, b int32, c, d int32, col color.Color) {
 	}
 }
 
+func circle(img *image.RGBA, cx, cy, radius int, col color.Color) {
+	x, y := radius, 0
+	// err := 1 - radius
+
+	for x >= y {
+		octants := [][2]int{
+			{x, y}, {x, -y}, {-x, y}, {-x, -y},
+			{y, x}, {y, -x}, {-y, x}, {-y, -x},
+		}
+		for _, point := range octants {
+			img.Set(cx+point[0], cy+point[1], col)
+		}
+		y++
+		x--
+	}
+}
+
 func main() {
-	img := image.NewRGBA(image.Rect(0, 0, 10000, 10000))
+	img := image.NewRGBA(image.Rect(0, 0, 200, 200))
 	for i := range img.Pix {
 		img.Pix[i] = 255 // white
 	}
-	line(img, 0, 0, 10000, 2000, RED)
-	line(img, 0, 0, 10000, 2001, RED)
-	line(img, 0, 0, 10000, 2002, RED)
-	line(img, 0, 0, 10000, 2003, RED)
-	line(img, 0, 0, 10000, 2004, RED)
-	line(img, 0, 0, 10000, 2005, RED)
-	line(img, 0, 0, 10000, 2006, RED)
-	line(img, 0, 0, 10000, 2007, RED)
-	line(img, 0, 0, 10000, 2008, RED)
-	line(img, 0, 0, 10000, 2009, RED)
-	line(img, 0, 0, 10000, 2010, RED)
-
+	line(img, 0, 0, 100, 100, RED)
+	circle(img, 100, 100, 10, RED)
 	f, _ := os.Create("out.png")
 	defer f.Close()
 	png.Encode(f, img)
