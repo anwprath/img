@@ -32,6 +32,11 @@ func abs[T Numeric](x T) T {
 // x = x0 + m*(x1-x0)
 // y = y0 + m*(y1-y0)
 func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
+	if x0 > x1 {
+		line(img, c, x1, y1, x0, y0)
+		return
+	}
+
 	for x := x0; x <= x1; x += 1 {
 		f := float64(x-x0) / float64(x1-x0)
 		y := int(float64(y0) + f*(float64(y1)-float64(y0)))
