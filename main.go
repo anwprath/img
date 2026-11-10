@@ -29,6 +29,16 @@ func abs[T Numeric](x T) T {
 	return -x
 }
 
+// x = x0 + m*(x1-x0)
+// y = y0 + m*(y1-y0)
+func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
+	for f := 0.0; f < 1; f += 0.02 {
+		x := int(float64(x0) + f*(float64(x1)-float64(x0)))
+		y := int(float64(y0) + f*(float64(y1)-float64(y0)))
+		img.Set(x, y, c)
+	}
+}
+
 func main() {
 	img := image.NewRGBA(image.Rect(0, 0, 64, 64))
 
@@ -36,10 +46,14 @@ func main() {
 	bx, by := 12, 37
 	cx, cy := 62, 53
 
+	line(img, blue, ax, ay, bx, by)
+	line(img, green, cx, cy, bx, by)
+	line(img, yellow, cx, cy, ax, ay)
+	line(img, red, ax, ay, cx, cy)
+
 	img.Set(ax, ay, white)
 	img.Set(bx, by, white)
 	img.Set(cx, cy, white)
-
 
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
