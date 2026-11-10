@@ -32,6 +32,13 @@ func abs[T Numeric](x T) T {
 // x = x0 + m*(x1-x0)
 // y = y0 + m*(y1-y0)
 func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
+	slope := float64(y1-y0) / float64(x1-x0)
+
+	if slope > 1 {
+		x0, y0 = y0, x0
+		x1, y1 = y1, x1
+	}
+
 	if x0 > x1 {
 		line(img, c, x1, y1, x0, y0)
 		return
@@ -40,7 +47,12 @@ func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 	for x := x0; x <= x1; x += 1 {
 		f := float64(x-x0) / float64(x1-x0)
 		y := int(float64(y0) + f*(float64(y1)-float64(y0)))
-		img.Set(x, y, c)
+
+		if slope > 1 {
+			img.Set(y, x, c)
+		} else {
+			img.Set(x, y, c)
+		}
 	}
 }
 
