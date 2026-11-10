@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math/rand"
 	"os"
 )
 
@@ -57,16 +58,26 @@ func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 }
 
 func main() {
-	img := image.NewRGBA(image.Rect(0, 0, 64, 64))
+	width := 64
+	height := 64
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
 	ax, ay := 7, 3
 	bx, by := 12, 37
 	cx, cy := 62, 53
 
-	line(img, blue, ax, ay, bx, by)
-	line(img, green, cx, cy, bx, by)
-	line(img, yellow, cx, cy, ax, ay)
-	line(img, red, ax, ay, cx, cy)
+	for i := 0; i < (1 << 24); i++ {
+		ax, ay := rand.Intn(width), rand.Intn(height)
+		bx, by := rand.Intn(width), rand.Intn(height)
+		color := color.RGBA{
+			R: uint8(rand.Intn(255)),
+			G: uint8(rand.Intn(255)),
+			B: uint8(rand.Intn(255)),
+			A: uint8(rand.Intn(255)),
+		}
+		line(img, color, ax, ay, bx, by)
+
+	}
 
 	img.Set(ax, ay, white)
 	img.Set(bx, by, white)
