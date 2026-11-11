@@ -48,14 +48,22 @@ func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 		return
 	}
 
-	for x := x0; x <= x1; x += 1 {
-		f := float64(x-x0) / float64(x1-x0)
-		y := int(float64(y0) + f*(float64(y1)-float64(y0)))
-
+	y := int(y0)
+	deviation := float64(0)
+	for x := x0; x <= x1; x++ {
 		if slope > 1 {
-			img.Set(y, x, c)
+			img.Set(int(y), x, c)
 		} else {
-			img.Set(x, y, c)
+			img.Set(x, int(y), c)
+		}
+		deviation += abs(float64(y1-y0) / float64(x1-x0))
+		if deviation > 0.5 {
+			if y1 > y0 {
+				y += 1
+			} else {
+				y -= 1
+			}
+			deviation -= 1
 		}
 	}
 }

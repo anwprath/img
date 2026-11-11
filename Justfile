@@ -12,3 +12,9 @@ mem: build
 
 bench:
     go test -bench=. -benchmem ./...
+
+build-prof:
+    go build -pgo=cpu.prof -o renderer-prof .
+
+run-prof: build-prof
+    ./renderer-prof
