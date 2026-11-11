@@ -58,7 +58,16 @@ func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 	xDiff := x1 - x0
 	deviation := 0
 	for x := x0; x <= x1; x++ {
-		img.Set(x, int(y), c)
+		if !(image.Point{x, y}.In(img.Rect)) {
+			continue
+		}
+		i := img.PixOffset(x, y)
+		s := img.Pix[i : i+4 : i+4]
+		s[0] = c.R
+		s[1] = c.G
+		s[2] = c.B
+		s[3] = c.A
+
 		deviation += 2 * abs((y1 - y0))
 		if deviation > xDiff {
 			y += verticalDirection
