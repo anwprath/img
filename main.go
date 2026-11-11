@@ -32,11 +32,9 @@ func Draw() {
 		ax, ay := normalize(model.vertices[model.faces[i][0]])
 		bx, by := normalize(model.vertices[model.faces[i][1]])
 		cx, cy := normalize(model.vertices[model.faces[i][2]])
-		line(img, red, ax, ay, bx, by)
+		triangle(img, red, ax, ay, bx, by, cx, cy)
 		img.Set(ax, ay, white)
-		line(img, red, bx, by, cx, cy)
 		img.Set(bx, by, white)
-		line(img, red, cx, cy, ax, ay)
 		img.Set(cx, cy, white)
 	}
 

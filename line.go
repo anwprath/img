@@ -5,6 +5,12 @@ import (
 	"image/color"
 )
 
+func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
+	line(img, c , x0, y0, x1, y1)
+	line(img, c , x0, y0, x2, y2)
+	line(img, c , x1, y1, x2, y2)
+}
+
 // x = x0 + m*(x1-x0)
 // y = y0 + m*(y1-y0)
 // now replace m in second eqn with m=(x-x0)/(x1-x0) from first equation
