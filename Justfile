@@ -18,3 +18,6 @@ build-prof:
 
 run-prof: build-prof
     ./renderer-prof
+
+clean:
+    rm renderer renderer-prof cpu.prof mem.prof
