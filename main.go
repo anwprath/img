@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	width  = 800
-	height = 800
+	width  = 150
+	height = 150
 )
 
 func normalize(arr [3]float64) (int, int) {
@@ -23,20 +23,9 @@ func normalize(arr [3]float64) (int, int) {
 func Draw() {
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	model, err := loadOBJ("diablo3_pose.obj")
-	if err != nil {
-		panic("error loading .obj file: " + err.Error())
-	}
-
-	for i := range model.faces {
-		ax, ay := normalize(model.vertices[model.faces[i][0]])
-		bx, by := normalize(model.vertices[model.faces[i][1]])
-		cx, cy := normalize(model.vertices[model.faces[i][2]])
-		triangle(img, red, ax, ay, bx, by, cx, cy)
-		img.Set(ax, ay, white)
-		img.Set(bx, by, white)
-		img.Set(cx, cy, white)
-	}
+	triangle(img, red, 7, 45, 35, 100, 45, 60)
+	triangle(img, white, 120, 35, 90, 5, 45, 110)
+	triangle(img, green, 115, 83, 80, 90, 85, 120)
 
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
