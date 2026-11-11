@@ -2,9 +2,7 @@ package main
 
 import (
 	"image"
-	"image/color"
 	"image/png"
-	"math/rand"
 	"os"
 	"runtime"
 	"runtime/pprof"
@@ -15,12 +13,17 @@ func Draw() {
 	height := 64
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	obj, err := loadOBJ("diablo3_pose.obj")
+	_, err := loadOBJ("diablo3_pose.obj")
 	if err != nil {
 		panic("error loading .obj file: " + err.Error())
 	}
 
-	// flipVertical(img) // inverted coordinate system of Go who tf knows why
+	line(img, red, 0, 0, 32, 32)
+	line(img, blue, 0, 64, 32, 32)
+	line(img, white, 64, 64, 32, 32)
+	line(img, green, 64, 0, 32, 32)
+
+	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
 	defer f.Close()
 	png.Encode(f, img)
