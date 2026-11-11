@@ -16,6 +16,26 @@ type Model struct {
 	faces [][3]int
 }
 
+// vertexCount reports the number of vertices in the model.
+func (m *Model) vertexCount() int {
+	return len(m.vertices)
+}
+
+// faceCount reports the number of triangles in the model.
+func (m *Model) faceCount() int {
+	return len(m.faces)
+}
+
+// vertex returns the position of the i-th vertex.
+func (m *Model) vertex(i int) [3]float64 {
+	return m.vertices[i]
+}
+
+// faceVertex returns the position of the nth vertex of the iface-th triangle.
+func (m *Model) faceVertex(iface, nth int) [3]float64 {
+	return m.vertices[m.faces[iface][nth]]
+}
+
 // loadOBJ reads the Wavefront .obj file at path and returns its mesh.
 // Only vertex positions and face definitions are needed by the renderer;
 // texture coordinates, normals, and other directives are ignored.
