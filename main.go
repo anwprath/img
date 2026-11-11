@@ -34,6 +34,7 @@ func abs[T Numeric](x T) T {
 
 // x = x0 + m*(x1-x0)
 // y = y0 + m*(y1-y0)
+// now replace m in second eqn with m=(x-x0)/(x1-x0) from first equation
 func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 	slope := float64(y1-y0) / float64(x1-x0)
 
@@ -85,7 +86,7 @@ func Draw() {
 	img.Set(bx, by, white)
 	img.Set(cx, cy, white)
 
-	flipVertical(img) // inverted coordinate system of Go who tf knows why
+	// flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
 	defer f.Close()
 	png.Encode(f, img)

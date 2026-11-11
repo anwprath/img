@@ -3,7 +3,6 @@ build:
 
 run: build
     ./renderer
-    rm renderer
 
 cpu: build
     go tool pprof -http=:8080 cpu.prof
