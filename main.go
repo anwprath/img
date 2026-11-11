@@ -15,26 +15,10 @@ func Draw() {
 	height := 64
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	ax, ay := 7, 3
-	bx, by := 12, 37
-	cx, cy := 62, 53
-
-	for i := 0; i < (1 << 24); i++ {
-		ax, ay := rand.Intn(width), rand.Intn(height)
-		bx, by := rand.Intn(width), rand.Intn(height)
-		color := color.RGBA{
-			R: uint8(rand.Intn(255)),
-			G: uint8(rand.Intn(255)),
-			B: uint8(rand.Intn(255)),
-			A: uint8(rand.Intn(255)),
-		}
-		line(img, color, ax, ay, bx, by)
-
+	obj, err := loadOBJ("diablo3_pose.obj")
+	if err != nil {
+		panic("error loading .obj file: " + err.Error())
 	}
-
-	img.Set(ax, ay, white)
-	img.Set(bx, by, white)
-	img.Set(cx, cy, white)
 
 	// flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
