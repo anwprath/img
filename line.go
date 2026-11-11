@@ -9,18 +9,14 @@ type Point struct {
 	X, Y int
 }
 
-func crossProduct(a, b Point) int {
-	return a.X*b.Y - b.X*a.Y
-}
-
-func sub(a, b Point) Point {
-	return Point{a.X - b.X, a.Y - b.Y}
+func signedTriangleArea(a, b, c Point) float64 {
+	return 0.5 * float64((b.Y-a.Y)*(b.X+a.X)+(c.Y-b.Y)*(c.X+b.X)+(a.Y-c.Y)*(a.X+c.X))
 }
 
 func pointInTriangle(p, a, b, c Point) bool {
-	prod1 := crossProduct(sub(p, a), sub(b, a))
-	prod2 := crossProduct(sub(p, b), sub(c, b))
-	prod3 := crossProduct(sub(p, c), sub(a, c))
+	prod1 := signedTriangleArea(p, a, b)
+	prod2 := signedTriangleArea(p, b, c)
+	prod3 := signedTriangleArea(p, c, a)
 
 	d1 := prod1 < 0 || prod2 < 0 || prod3 < 0
 	d2 := prod1 > 0 || prod2 > 0 || prod3 > 0
@@ -28,6 +24,16 @@ func pointInTriangle(p, a, b, c Point) bool {
 }
 
 func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
+	if y0 > y1 {
+		x0, y0, x1, y1 = x1, y1, x0, y0
+	}
+	if y0 > y2 {
+		x0, y0, x2, y2 = x2, y2, x0, y0
+	}
+	if y1 > y2 {
+		x1, y1, x2, y2 = x2, y2, x1, y1
+	}
+
 	line(img, c, x0, y0, x1, y1)
 	line(img, c, x0, y0, x2, y2)
 	line(img, c, x1, y1, x2, y2)
@@ -44,7 +50,7 @@ func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
 // x = x0 + m*(x1-x0)
 // y = y0 + m*(y1-y0)
 // now replace m in second eqn with m=(x-x0)/(x1-x0) from first equation
-// multiply everything by 2 to remove floating point math
+// multiply everything b.Y 2 to remove floating point math
 // 63, 0, 32,32
 func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 	steep := abs(y1-y0) > abs(x1-x0)
