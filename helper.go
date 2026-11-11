@@ -7,10 +7,13 @@ type Numeric interface {
 }
 
 func abs[T Numeric](x T) T {
-	if x < 0 {
-		return -x
+	if x == 0 {
+		return 1
 	}
-	return x
+	if x > 0 {
+		return x
+	}
+	return -x
 }
 
 func flipVertical(img *image.RGBA) {
