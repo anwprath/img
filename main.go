@@ -2,7 +2,9 @@ package main
 
 import (
 	"image"
+	"image/color"
 	"image/png"
+	"math/rand/v2" 
 	"os"
 	"runtime"
 	"runtime/pprof"
@@ -23,9 +25,18 @@ func normalize(arr [3]float64) (int, int) {
 func Draw() {
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	triangle(img, red, 7, 45, 35, 100, 45, 60)
-	triangle(img, white, 120, 35, 90, 5, 45, 110)
-	triangle(img, green, 115, 83, 80, 90, 85, 120)
+	model, err := loadOBJ("diablo3_pose.obj")
+	if err != nil {
+		panic("error loading .obj file: " + err.Error())
+	}
+
+	for i := range model.faces {
+		ax, ay := normalize(model.vertices[model.faces[i][0]])
+		bx, by := normalize(model.vertices[model.faces[i][1]])
+		cx, cy := normalize(model.vertices[model.faces[i][2]])
+		triangle(img, color.RGBA{
+			uint8(rand.IntN(255)), uint8(rand.IntN(255)), uint8(rand.IntN(255)), 255}, ax, ay, bx, by, cx, cy)
+	}
 
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
