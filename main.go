@@ -6,6 +6,8 @@ import (
 	"image/png"
 	"math/rand"
 	"os"
+	"runtime"
+	"runtime/pprof"
 )
 
 var (
@@ -57,7 +59,7 @@ func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
 	}
 }
 
-func main() {
+func Draw() {
 	width := 64
 	height := 64
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
@@ -87,4 +89,33 @@ func main() {
 	f, _ := os.Create("out.png")
 	defer f.Close()
 	png.Encode(f, img)
+}
+
+func main() {
+	// -------- CPU profiling ----------------------------
+	cpuProf, err := os.Create("cpu.prof")
+	if err != nil {
+		panic(err)
+	}
+	if err := pprof.StartCPUProfile(cpuProf); err != nil {
+		panic(err)
+	}
+	defer cpuProf.Close()
+	defer pprof.StopCPUProfile()
+
+	// -------- Memory profiling -------------------------
+	memProf, err := os.Create("mem.prof")
+	if err != nil {
+		panic(err)
+	}
+	defer memProf.Close()
+
+	Draw()
+
+	runtime.GC() // Force GC before collecting the heap profile.
+
+	if err := pprof.WriteHeapProfile(memProf); err != nil {
+		panic(err)
+	}
+
 }
