@@ -8,20 +8,37 @@ import (
 	"runtime/pprof"
 )
 
+var (
+	width  = 800
+	height = 800
+)
+
+func normalize(arr [3]float64) (int, int) {
+	x := int((arr[0] + 1.0) * float64(width) / 2)
+	y := int((1 + arr[1]) * float64(height) / 2)
+
+	return x, y
+}
+
 func Draw() {
-	width := 64
-	height := 64
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	_, err := loadOBJ("diablo3_pose.obj")
+	model, err := loadOBJ("diablo3_pose.obj")
 	if err != nil {
 		panic("error loading .obj file: " + err.Error())
 	}
 
-	line(img, red, 0, 0, 32, 32)
-	line(img, blue, 0, 64, 32, 32)
-	line(img, white, 64, 64, 32, 32)
-	line(img, green, 64, 0, 32, 32)
+	for i := range model.faces {
+		ax, ay := normalize(model.vertices[model.faces[i][0]])
+		bx, by := normalize(model.vertices[model.faces[i][1]])
+		cx, cy := normalize(model.vertices[model.faces[i][2]])
+		line(img, red, ax, ay, bx, by)
+		img.Set(ax, ay, white)
+		line(img, red, bx, by, cx, cy)
+		img.Set(bx, by, white)
+		line(img, red, cx, cy, ax, ay)
+		img.Set(cx, cy, white)
+	}
 
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
