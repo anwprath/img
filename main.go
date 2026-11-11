@@ -37,16 +37,16 @@ func abs[T Numeric](x T) T {
 // now replace m in second eqn with m=(x-x0)/(x1-x0) from first equation
 // multiply everything by 2 to remove floating point math
 func line(img *image.RGBA, c color.RGBA, x0, y0, x1, y1 int) {
-	slope := abs(float64(y1-y0) / float64(x1-x0))
+	steep := abs(y1-y0) > abs(x1-x0)
 
-	if slope > 1 {
-		line(img, c, y0, x0, y1, x1)
-		return
+	if steep {
+		x0, y0 = y0, x0
+		x1, y1 = y1, x1
 	}
 
 	if x0 > x1 {
-		line(img, c, x1, y1, x0, y0)
-		return
+		x0, x1 = x1, x0
+		y0, y1 = y1, y0
 	}
 
 	y := int(y0)
