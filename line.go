@@ -13,14 +13,17 @@ func signedTriangleArea(a, b, c Point) float64 {
 	return 0.5 * float64((b.Y-a.Y)*(b.X+a.X)+(c.Y-b.Y)*(c.X+b.X)+(a.Y-c.Y)*(a.X+c.X))
 }
 
-func pointInTriangle(p, a, b, c Point) bool {
-	prod1 := signedTriangleArea(p, a, b)
-	prod2 := signedTriangleArea(p, b, c)
-	prod3 := signedTriangleArea(p, c, a)
+func triangleBarycentricCoordinates(p, a, b, c Point) (float64, float64, float64) {
+	totalArea := signedTriangleArea(a, b, c)
+	alpha := signedTriangleArea(p, a, b) / totalArea
+	beta := signedTriangleArea(p, b, c) / totalArea
+	gamma := signedTriangleArea(p, c, a) / totalArea
 
-	d1 := prod1 < 0 || prod2 < 0 || prod3 < 0
-	d2 := prod1 > 0 || prod2 > 0 || prod3 > 0
-	return !(d1 && d2)
+	return alpha, beta, gamma
+}
+
+func pointInTriangle(a, b, c float64) bool {
+	return !(a < 0 || b < 0 || c < 0)
 }
 
 func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
@@ -40,7 +43,8 @@ func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
 
 	for i := min(x0, x1, x2); i < max(x0, x1, x2); i++ {
 		for j := min(y0, y1, y2); j < max(y0, y1, y2); j++ {
-			if pointInTriangle(Point{i, j}, Point{x0, y0}, Point{x1, y1}, Point{x2, y2}) {
+			alpha, beta, gamma := triangleBarycentricCoordinates(Point{i, j}, Point{x0, y0}, Point{x1, y1}, Point{x2, y2})
+			if pointInTriangle(alpha, beta, gamma) {
 				img.Set(i, j, c)
 			}
 		}
