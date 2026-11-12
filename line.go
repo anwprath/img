@@ -26,7 +26,7 @@ func pointInTriangle(a, b, c float64) bool {
 	return !(a < 0 || b < 0 || c < 0)
 }
 
-func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
+func triangle(img *image.RGBA, c color.RGBA, x0, y0, z0, x1, y1, z1, x2, y2, z2 int) {
 	if y0 > y1 {
 		x0, y0, x1, y1 = x1, y1, x0, y0
 	}
@@ -44,6 +44,24 @@ func triangle(img *image.RGBA, c color.RGBA, x0, y0, x1, y1, x2, y2 int) {
 	for i := min(x0, x1, x2); i < max(x0, x1, x2); i++ {
 		for j := min(y0, y1, y2); j < max(y0, y1, y2); j++ {
 			alpha, beta, gamma := triangleBarycentricCoordinates(Point{i, j}, Point{x0, y0}, Point{x1, y1}, Point{x2, y2})
+			z := uint8(alpha*float64(0) +
+				beta*float64(0) +
+				gamma*float64(255))
+
+			y := uint8(alpha*float64(255) +
+				beta*float64(0) +
+				gamma*float64(0))
+
+			x := uint8(alpha*float64(0) +
+				beta*float64(255) +
+				gamma*float64(0))
+
+			c = color.RGBA{
+				R: z,
+				G: y,
+				B: x,
+				A: 255,
+			}
 			if pointInTriangle(alpha, beta, gamma) {
 				img.Set(i, j, c)
 			}

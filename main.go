@@ -8,12 +8,11 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
-	"sync"
 )
 
 var (
-	width  = 4096
-	height = 4096
+	width  = 300
+	height = 300
 )
 
 func normalize(arr [3]float64) (int, int) {
@@ -26,23 +25,12 @@ func normalize(arr [3]float64) (int, int) {
 func Draw() {
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	model, err := loadOBJ("diablo3_pose.obj")
-	if err != nil {
-		panic("error loading .obj file: " + err.Error())
-	}
+	ax, ay, az := 17, 4, 13
+	bx, by, bz := 55, 39, 128
+	cx, cy, cz := 23, 59, 255
+	triangle(img, color.RGBA{
+		uint8(rand.IntN(255)), uint8(rand.IntN(255)), uint8(rand.IntN(255)), 255}, ax, ay, az, bx, by, bz, cx, cy, cz)
 
-	var wg sync.WaitGroup
-	for i := range model.faces {
-		ax, ay := normalize(model.vertices[model.faces[i][0]])
-		bx, by := normalize(model.vertices[model.faces[i][1]])
-		cx, cy := normalize(model.vertices[model.faces[i][2]])
-		// wg.Go(func() {
-			triangle(img, color.RGBA{
-				uint8(rand.IntN(255)), uint8(rand.IntN(255)), uint8(rand.IntN(255)), 255}, ax, ay, bx, by, cx, cy)
-		// })
-	}
-
-	wg.Wait()
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
 	defer f.Close()
