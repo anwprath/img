@@ -5,9 +5,9 @@ import (
 	"image/color"
 )
 
-type xyPoint struct{ x, y uint8 }
+type xyPoint struct{ x, y int }
 
-var zBuffer map[xyPoint]uint8 = make(map[xyPoint]uint8)
+var zBuffer map[xyPoint]float64 = make(map[xyPoint]float64)
 
 type Point struct {
 	X, Y int
@@ -19,9 +19,9 @@ func signedTriangleArea(a, b, c Point) float64 {
 
 func triangleBarycentricCoordinates(p, a, b, c Point) (float64, float64, float64) {
 	totalArea := signedTriangleArea(a, b, c)
-	alpha := signedTriangleArea(p, a, b) / totalArea
-	beta := signedTriangleArea(p, b, c) / totalArea
-	gamma := signedTriangleArea(p, c, a) / totalArea
+    alpha := signedTriangleArea(p, b, c) / totalArea
+    beta := signedTriangleArea(p, c, a) / totalArea
+    gamma := signedTriangleArea(p, a, b) / totalArea
 
 	return alpha, beta, gamma
 }
@@ -44,25 +44,22 @@ func triangle(img *image.RGBA, c color.RGBA, x0, y0, z0, x1, y1, z1, x2, y2, z2 
 	for i := min(x0, x1, x2); i < max(x0, x1, x2); i++ {
 		for j := min(y0, y1, y2); j < max(y0, y1, y2); j++ {
 			alpha, beta, gamma := triangleBarycentricCoordinates(Point{i, j}, Point{x0, y0}, Point{x1, y1}, Point{x2, y2})
-			z := uint8(alpha*float64(z0) + beta*float64(z1) + gamma*float64(z2))
+			if !pointInTriangle(alpha, beta, gamma) {
+				continue
+			}
+			z := alpha*float64(z0) + beta*float64(z1) + gamma*float64(z2)
 
-			gray = color.Gray{
-				Y: z,
-			}
 			xy := xyPoint{
-				uint8(i), uint8(j),
+				i, j,
 			}
-			if val, ok := zBuffer[xy]; pointInTriangle(alpha, beta, gamma) {
-				if !ok {
-					zBuffer[xy] = z
-				} else if val >= z {
-					continue
-				}
-				img.Set(i, j, gray)
-				line(img, gray, x0, y0, x1, y1)
-				line(img, gray, x0, y0, x2, y2)
-				line(img, gray, x1, y1, x2, y2)
+			if val, ok := zBuffer[xy]; ok && val >= z {
+				continue
 			}
+			zBuffer[xy] = z
+			gray = color.Gray{
+				Y: uint8(z),
+			}
+			img.Set(i, j, gray)
 		}
 	}
 
@@ -105,8 +102,8 @@ func line(img *image.RGBA, c color.Gray, x0, y0, x1, y1 int) {
 			s := img.Pix[i : i+4 : i+4]
 			r, g, b, a := c.RGBA()
 			s[0] = uint8(r >> 8)
-			s[1] = uint8(b >> 8)
-			s[2] = uint8(g >> 8)
+			s[1] = uint8(g >> 8)
+			s[2] = uint8(b >> 8)
 			s[3] = uint8(a >> 8)
 		}
 
