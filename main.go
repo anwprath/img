@@ -4,7 +4,6 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	"math/rand/v2"
 	"os"
 	"runtime"
 	"runtime/pprof"
@@ -15,22 +14,27 @@ var (
 	height = 300
 )
 
-func normalize(arr [3]float64) (int, int) {
+func normalize(arr [3]float64) (int, int, int) {
 	x := int((arr[0] + 1.0) * float64(width) / 2)
 	y := int((1 + arr[1]) * float64(height) / 2)
-
-	return x, y
+	z := int((1 + arr[2]) * float64(255) / 2)
+	return x, y, z
 }
 
 func Draw() {
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	ax, ay, az := 17, 4, 13
-	bx, by, bz := 55, 39, 128
-	cx, cy, cz := 23, 59, 255
-	triangle(img, color.RGBA{
-		uint8(rand.IntN(255)), uint8(rand.IntN(255)), uint8(rand.IntN(255)), 255}, ax, ay, az, bx, by, bz, cx, cy, cz)
+	model, err := loadOBJ("diablo3_pose.obj")
+	if err != nil {
+		panic("error loading .obj file: " + err.Error())
+	}
 
+	for i := range model.faces {
+		ax, ay, az := normalize(model.vertices[model.faces[i][0]])
+		bx, by, bz := normalize(model.vertices[model.faces[i][1]])
+		cx, cy, cz := normalize(model.vertices[model.faces[i][2]])
+		triangle(img, color.RGBA{}, ax, ay, az, bx, by, bz, cx, cy, cz)
+	}
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
 	f, _ := os.Create("out.png")
 	defer f.Close()
