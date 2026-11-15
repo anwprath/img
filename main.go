@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math"
 	"os"
 	"runtime"
 	"runtime/pprof"
@@ -13,6 +14,18 @@ var (
 	width  = 800
 	height = 800
 )
+
+// y-axis rotation
+func rotate(arr [3]float64) [3]float64 {
+	const piBy6 = math.Pi / 6
+	cos, sin := math.Cos(piBy6), math.Cos(piBy6)
+
+	return [3]float64{
+		cos*arr[0] + sin*arr[2],
+		arr[1],
+		-sin*arr[0] + cos*arr[2],
+	}
+}
 
 func normalize(arr [3]float64) (int, int, int) {
 	x := int((arr[0] + 1.0) * float64(width) / 2)
@@ -30,9 +43,9 @@ func Draw() {
 	}
 
 	for i := range model.faces {
-		ax, ay, az := normalize(model.vertices[model.faces[i][0]])
-		bx, by, bz := normalize(model.vertices[model.faces[i][1]])
-		cx, cy, cz := normalize(model.vertices[model.faces[i][2]])
+		ax, ay, az := normalize(rotate(model.vertices[model.faces[i][0]]))
+		bx, by, bz := normalize(rotate(model.vertices[model.faces[i][1]]))
+		cx, cy, cz := normalize(rotate(model.vertices[model.faces[i][2]]))
 		triangle(img, color.RGBA{}, ax, ay, az, bx, by, bz, cx, cy, cz)
 	}
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
