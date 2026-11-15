@@ -27,6 +27,17 @@ func rotate(arr [3]float64) [3]float64 {
 	}
 }
 
+// viewer at (0,0,c)
+func perspective(arr [3]float64) [3]float64 {
+	scale := 1.0 - arr[2]/3.0
+	
+	return [3]float64{
+		arr[0] / scale,
+		arr[1] / scale,
+		arr[2] / scale,
+	}
+}
+
 func normalize(arr [3]float64) (int, int, int) {
 	x := int((arr[0] + 1.0) * float64(width) / 2)
 	y := int((1 + arr[1]) * float64(height) / 2)
@@ -43,9 +54,9 @@ func Draw() {
 	}
 
 	for i := range model.faces {
-		ax, ay, az := normalize(rotate(model.vertices[model.faces[i][0]]))
-		bx, by, bz := normalize(rotate(model.vertices[model.faces[i][1]]))
-		cx, cy, cz := normalize(rotate(model.vertices[model.faces[i][2]]))
+		ax, ay, az := normalize(perspective(rotate(model.vertices[model.faces[i][0]])))
+		bx, by, bz := normalize(perspective(rotate(model.vertices[model.faces[i][1]])))
+		cx, cy, cz := normalize(perspective(rotate(model.vertices[model.faces[i][2]])))
 		triangle(img, color.RGBA{}, ax, ay, az, bx, by, bz, cx, cy, cz)
 	}
 	flipVertical(img) // inverted coordinate system of Go who tf knows why
